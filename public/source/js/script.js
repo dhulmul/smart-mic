@@ -12,21 +12,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
      *
      * The iceServers on this example are public and can be used for your project.
      */
-    var peer = new Peer({
-        host: "localhost",
-        port: 9000,
-        path: '/peerjs',
-        debug: 3,
-        config: {
-            'iceServers': [
-                { url: 'stun:stun1.l.google.com:19302' },
-                {
-                    url: 'turn:numb.viagenie.ca',
-                    credential: 'muazkh',
-                    username: 'webrtc@live.com'
-                }
-            ]
-        }
+    const peer = new Peer({
+        // host: "192.168.0.105",
+        // port: 9000,
+        // path: '/peerjs',
+        // debug: 5,
+        // config: {
+        //     'iceServers': [
+        //         { url: 'stun:stun1.l.google.com:19302' },
+        //         {
+        //             url: 'turn:numb.viagenie.ca',
+        //             credential: 'muazkh',
+        //             username: 'webrtc@live.com'
+        //         }
+        //     ]
+        // }
     });
 
     // Once the initialization succeeds:
@@ -51,11 +51,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("peer_id").className += " hidden";
         document.getElementById("peer_id").value = peer_id;
         document.getElementById("connected_peer").innerHTML = connection.metadata.username;
+        console.log('Connection metadata:', connection.metadata);
     });
 
     peer.on('error', function(err){
         alert("An error ocurred with peer: " + err);
-        console.error(err);
+        console.error("Reason of error " + err);
     });
 
     /**
@@ -107,13 +108,41 @@ document.addEventListener("DOMContentLoaded", function(event) {
      * @param {*} element_id
      */
     function onReceiveStream(stream, element_id) {
+        console.log('on onreceivestream: ', element_id); 
         // Retrieve the video element according to the desired
         var video = document.getElementById(element_id);
         // Set the given stream as the video source
-        video.src = window.URL.createObjectURL(stream);
-
+        //video.src = window.URL.createObjectURL(stream);
+        video.srcObject = stream;
         // Store a global reference of the stream
         window.peer_stream = stream;
+
+        // var microphone = context.createMediaStreamSource(stream);
+        // var filter = context.createBiquadFilter();
+        // var peer_destination = context.createMediaStreamDestination();
+        // microphone.connect(filter);
+        // filter.connect(peer_destination);
+
+        if(element_id === 'my-camera') {
+            console.log('found my-camera');
+            const audioTrack = stream.getAudioTracks()[0]
+            var ctx = new AudioContext()
+            var src = ctx.createMediaStreamSource(new MediaStream([audioTrack]))
+            var dst = ctx.createMediaStreamDestination()
+            var gainNode = ctx.createGain()
+            gainNode.gain.value = 0.1;
+
+            // var delay = ctx.createDelay(179);
+            // delay.delayTime.value = 179;
+            // Attach src -> gain -> dst
+            [src, gainNode, dst].reduce((a, b) => a && a.connect(b))
+            stream.removeTrack(audioTrack)
+            stream.addTrack(dst.stream.getAudioTracks()[0])
+        } else {
+            console.log('not my-camera element');
+        }
+      
+        
     }
 
     /**
@@ -175,6 +204,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
     }, false);
 
+
+
+    /**
+     *  Request a videocall the other user
+     */
+    document.getElementById("cancel").addEventListener("click", function(){
+        console.log('Cancelled call ');
+        console.log(peer);
+        var video = document.getElementById('my-camera');
+        video.muted = true;
+        let stream = video.srcObject;
+        stream.getAudioTracks()[0].stop();
+    }, false);
+
     /**
      * On click the connect button, initialize connection with peer
      */
@@ -206,6 +249,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         success: function(stream){
             window.localStream = stream;
             onReceiveStream(stream, 'my-camera');
+
         },
         error: function(err){
             alert("Cannot get access to your camera and video !");
