@@ -1,6 +1,6 @@
-# videochat-peerjs-example
+# audiochat-peerjs-example
 
-A videochat implementation using PeerJS with Node.js
+A audiochat implementation using PeerJS with Node.js
 
 # How to use
 

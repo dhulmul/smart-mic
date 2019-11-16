@@ -3,7 +3,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var peer_id;
     var username;
     var conn;
-
+    const constraints =  {
+        autoGainControl: false,
+        noiseSuppression: true,
+        echoCancellation: true,
+        sampleRate: 16000
+    };
+      
     /**
      * Important: the host needs to be changed according to your requirements.
      * e.g if you want to access the Peer server from another device, the
@@ -63,23 +69,24 @@ document.addEventListener("DOMContentLoaded", function(event) {
      * Handle the on receive call event
      */
     peer.on('call', function (call) {
-        var acceptsCall = confirm("Videocall incoming, do you want to accept it ?");
+        var acceptsCall = confirm("Audiocall incoming, do you want to accept it ?");
 
         if(acceptsCall){
-            // Answer the call with your own video/audio stream
+            // Answer the call with your own audio stream
             call.answer(window.localStream);
 
             // Receive data
             call.on('stream', function (stream) {
+                console.log('Constraints ************' ,stream.getAudioTracks()[0].getConstraints());
                 // Store a global reference of the other user stream
                 window.peer_stream = stream;
-                // Display the stream of the other user in the peer-camera video element !
+                // Display the stream of the other user in the peer-camera audio element !
                 onReceiveStream(stream, 'peer-camera');
             });
 
             // Handle when the call finishes
             call.on('close', function(){
-                alert("The videocall has finished");
+                alert("The session has finished");
             });
 
             // use call.close() to finish a call
@@ -89,37 +96,31 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     /**
-     * Starts the request of the camera and microphone
+     * Starts the request of microphone
      *
      * @param {Object} callbacks
      */
-    function requestLocalVideo(callbacks) {
+    function requestLocalAudio(callbacks) {
         // Monkeypatch for crossbrowser geusermedia
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-        // Request audio an video
-        navigator.getUserMedia({ audio: {
-            autoGainControl: false,
-            noiseSuppression: true,
-            echoCancellation: true,
-    
-            
-        }}, callbacks.success , callbacks.error);
+        // Request audio
+        navigator.getUserMedia({ audio: constraints} , callbacks.success , callbacks.error);
     }
 
     /**
-     * Handle the providen stream (video and audio) to the desired video element
+     * Handle the providen stream (audio) to the desired audio element
      *
      * @param {*} stream
      * @param {*} element_id
      */
     function onReceiveStream(stream, element_id) {
         console.log('on onreceivestream: ', element_id); 
-        // Retrieve the video element according to the desired
-        var video = document.getElementById(element_id);
-        // Set the given stream as the video source
+        // Retrieve the audio element according to the desired
+        var audio = document.getElementById(element_id);
+        // Set the given stream as the audio source
         //video.src = window.URL.createObjectURL(stream);
-        video.srcObject = stream;
+        audio.srcObject = stream;
         // Store a global reference of the stream
         window.peer_stream = stream;
 
@@ -195,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }, false);
 
     /**
-     *  Request a videocall the other user
+     *  Request a audiocall to the other user
      */
     document.getElementById("call").addEventListener("click", function(){
         console.log('Calling to ' + peer_id);
@@ -205,7 +206,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         call.on('stream', function (stream) {
             window.peer_stream = stream;
-
             onReceiveStream(stream, 'peer-camera');
         });
     }, false);
@@ -213,15 +213,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
     /**
-     *  Request a videocall the other user
+     *  Request a audiocall the other user
      */
     document.getElementById("cancel").addEventListener("click", function(){
         console.log('Cancelled call ');
         console.log(peer);
-        var video = document.getElementById('my-camera');
-        video.muted = true;
-        let stream = video.srcObject;
+        var audio = document.getElementById('my-camera');
+        audio.muted = true;
+        let stream = audio.srcObject;
         stream.getAudioTracks()[0].stop();
+        window.peer_stream.getAudioTracks()[0].stop();
     }, false);
 
     /**
@@ -249,16 +250,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }, false);
 
     /**
-     * Initialize application by requesting your own video to test !
+     * Initialize application by requesting your own audio to test !
      */
-    requestLocalVideo({
+    requestLocalAudio({
         success: function(stream){
+            console.log('type of stream: ', typeof(stream));
+            const track = stream.getAudioTracks()[0];
+            // track.applyConstraints(constraints);
+            // console.log('Type of track: ', typeof(track));
+            console.log(track.getConstraints());
             window.localStream = stream;
             onReceiveStream(stream, 'my-camera');
-
         },
         error: function(err){
-            alert("Cannot get access to your camera and video !");
+            alert("Cannot get access to your microphone !");
             console.error(err);
         }
     });

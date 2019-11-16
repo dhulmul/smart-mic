@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Video Chat with PeerJS</title>
+    <title>Audio Chat with PeerJS</title>
     
     <!-- Use Bootswatch CSS from cdn -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css">
@@ -14,19 +14,19 @@
         <div class="row">
             <div class="col-md-6 col-lg-6">
                 <!-- 
-                    Display video of the current user
-                    Note: mute your own video, otherwise you'll hear yourself ...
+                    Display audio of the current user
+                    Note: mute your own audio, otherwise you'll hear yourself ...
                  -->
                 <div class="text-center">
-                    <video id="my-camera"  width="300" height="300" autoplay="autoplay" muted="true" class="center-block"></video>
+                    <audio id="my-camera"  width="300" height="300" autoplay="autoplay" muted="true" class="center-block"></audio>
                     <span class="label label-info">You</span>
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-6">
-                <!-- Display video of the connected peer -->
+                <!-- Display audio of the connected peer -->
                 <div class="text-center">
-                    <video id="peer-camera" width="300" height="300" autoplay="autoplay" class="center-block"></video>
+                    <audio id="peer-camera" width="300" height="300" autoplay="autoplay" class="center-block"></audio>
                     <span class="label label-info" id="connected_peer"></span>
                 </div>
             </div>
