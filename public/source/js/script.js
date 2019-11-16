@@ -98,7 +98,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
         // Request audio an video
-        navigator.getUserMedia({ audio: true, video: true }, callbacks.success , callbacks.error);
+        navigator.getUserMedia({ audio: {
+            autoGainControl: false,
+            noiseSuppression: true,
+            echoCancellation: true,
+    
+            
+        }}, callbacks.success , callbacks.error);
     }
 
     /**
@@ -130,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             var src = ctx.createMediaStreamSource(new MediaStream([audioTrack]))
             var dst = ctx.createMediaStreamDestination()
             var gainNode = ctx.createGain()
-            gainNode.gain.value = 0.1;
+            gainNode.gain.value = 0.5;
 
             // var delay = ctx.createDelay(179);
             // delay.delayTime.value = 179;
