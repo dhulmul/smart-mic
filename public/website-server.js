@@ -33,7 +33,8 @@ Object.keys(ifaces).forEach(function (ifname) {
             // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
             return;
         }
-        
+      
+
         console.log("");
         console.log("Welcome to the Chat Sandbox");
         console.log("");
@@ -45,6 +46,7 @@ Object.keys(ifaces).forEach(function (ifname) {
 
         if (alias >= 1) {
             console.log("Multiple ipv4 addreses were found ... ");
+            document.getElementById('ip-info').value = ifname + ':' + alias, "https://"+ iface.address + ":8443" ;
             // this single interface has multiple ipv4 addresses
             console.log(ifname + ':' + alias, "https://"+ iface.address + ":8443");
         } else {
@@ -65,6 +67,11 @@ httpsServer.listen(8443, LANAccess);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname+'/index.html'));
+});
+
+app.get('/admin', function (req, res) {
+    console.log('in admin...')
+    res.sendFile(path.join(__dirname+'/admin.html'));
 });
 
 // Expose the css and js resources as "resources"

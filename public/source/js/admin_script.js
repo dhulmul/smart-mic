@@ -1,3 +1,4 @@
+
 // When the DOM is ready
 document.addEventListener("DOMContentLoaded", function(event) {
     var peer_id;
@@ -7,8 +8,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         autoGainControl: false,
         noiseSuppression: true,
         echoCancellation: true,
-        sampleRate: 16000,
-        volume: 0.0
     };
       
     /**
@@ -57,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // Hide peer_id field and set the incoming peer id as value
         document.getElementById("peer_id").className += " hidden";
         document.getElementById("peer_id").value = peer_id;
-        document.getElementById("connected_peer").innerHTML = connection.metadata.username;
+        document.getElementById("connected_peer").innerHTML = "Name of peer:" + connection.metadata.username;
         console.log('Connection metadata:', connection.metadata);
     });
 
@@ -129,28 +128,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // var filter = context.createBiquadFilter();
         // var peer_destination = context.createMediaStreamDestination();
         // microphone.connect(filter);
-        // filter.connect(peer_destination);
-
-        if(element_id === 'my-camera') {
-            console.log('found my-camera');
-            const audioTrack = stream.getAudioTracks()[0]
-            var ctx = new AudioContext()
-            var src = ctx.createMediaStreamSource(new MediaStream([audioTrack]))
-            var dst = ctx.createMediaStreamDestination()
-            var gainNode = ctx.createGain()
-            gainNode.gain.value = 0.5;
-
-            // var delay = ctx.createDelay(179);
-            // delay.delayTime.value = 179;
-            // Attach src -> gain -> dst
-            [src, gainNode, dst].reduce((a, b) => a && a.connect(b))
-            stream.removeTrack(audioTrack)
-            stream.addTrack(dst.stream.getAudioTracks()[0])
-        } else {
-            console.log('not my-camera element');
-        }
-      
-        
+        // filter.connect(peer_destination);        
     }
 
     /**
@@ -214,15 +192,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
     /**
-     *  Request a audiocall the other user
+     *  Request muting the microphone at admin side.
      */
     document.getElementById("cancel").addEventListener("click", function(){
-        console.log('Cancelled call ');
-        console.log(peer);
-        var audio = document.getElementById('my-camera');
-        audio.muted = true;
-        let stream = audio.srcObject;
-        stream.getAudioTracks()[0].stop();
+        console.log('Muting microphone at admin side.');
         window.peer_stream.getAudioTracks()[0].stop();
     }, false);
 
@@ -249,23 +222,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("chat").className = "";
         document.getElementById("connection-form").className += " hidden";
     }, false);
-
-    /**
-     * Initialize application by requesting your own audio to test !
-     */
-    requestLocalAudio({
-        success: function(stream){
-            console.log('type of stream: ', typeof(stream));
-            const track = stream.getAudioTracks()[0];
-            // track.applyConstraints(constraints);
-            // console.log('Type of track: ', typeof(track));
-            console.log(track.getConstraints());
-            window.localStream = stream;
-            onReceiveStream(stream, 'my-camera');
-        },
-        error: function(err){
-            alert("Cannot get access to your microphone !");
-            console.error(err);
-        }
-    });
 }, false);
