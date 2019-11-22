@@ -4,11 +4,37 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var peer_id;
     var username;
     var conn;
+    var connected_peers_name_list = [];
+    var current_peer_username;
     const constraints =  {
         autoGainControl: false,
         noiseSuppression: true,
         echoCancellation: true,
     };
+
+    var imageAddr = "http://www.tranquilmusic.ca/images/cats/Cat2.JPG" + "?n=" + Math.random();
+    var startTime, endTime;
+    var downloadSize = 5616998;
+    var download = new Image();
+    download.onload = function () {
+        endTime = (new Date()).getTime();
+        showResults();
+    }
+    startTime = (new Date()).getTime();
+    download.src = imageAddr;
+
+    function showResults() {
+        var duration = (endTime - startTime) / 1000; //Math.round()
+        var bitsLoaded = downloadSize * 8;
+        var speedBps = (bitsLoaded / duration).toFixed(2);
+        var speedKbps = (speedBps / 1024).toFixed(2);
+        var speedMbps = (speedKbps / 1024).toFixed(2);
+        alert("Your connection speed is: \n" + 
+            speedBps + " bps\n"   + 
+            speedKbps + " kbps\n" + 
+            speedMbps + " Mbps\n" );
+    }
+
       
     /**
      * Important: the host needs to be changed according to your requirements.
@@ -34,7 +60,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         //     ]
         // }
     });
-
+    
+    
     // Once the initialization succeeds:
     // Show the ID that allows other user to connect to your session.
     peer.on('open', function () {
@@ -49,15 +76,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
     peer.on('connection', function (connection) {
         conn = connection;
         peer_id = connection.peer;
-
         // Use the handleMessage to callback when a message comes in
         conn.on('data', handleMessage);
-
         // Hide peer_id field and set the incoming peer id as value
-        document.getElementById("peer_id").className += " hidden";
-        document.getElementById("peer_id").value = peer_id;
+        // document.getElementById("peer_id").className += " hidden";
+        document.getElementById("peer_id").value += peer_id;
         document.getElementById("connected_peer").innerHTML = "Name of peer:" + connection.metadata.username;
+        current_peer_username = connection.metadata.username;
+        connected_peers_name_list.push(connection.metadata.username);
         console.log('Connection metadata:', connection.metadata);
+        console.log('Connected peers: ', connected_peers_name_list);
+        document.getElementById('ip-list').innerHTML += '<li>' + connection.metadata.username + '</li>';
+    });
+
+    peer.on('close', function(mediaConnection){
+        console.log('in on close, username:', mediaConnection.metadata.username);
     });
 
     peer.on('error', function(err){
@@ -69,7 +102,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
      * Handle the on receive call event
      */
     peer.on('call', function (call) {
-        var acceptsCall = confirm("Audiocall incoming, do you want to accept it ?");
+      //  console.log('in onCall ', call.metadata);
+        console.log("Current user name: ", current_peer_username);
+        var acceptsCall = confirm(`Audiocall incoming from ${current_peer_username}  do you want to accept it ?`);
 
         if(acceptsCall){
             // Answer the call with your own audio stream
@@ -86,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
             // Handle when the call finishes
             call.on('close', function(){
+                console.log("Connection closed with: ", call.peer);
                 alert("The session has finished");
             });
 
@@ -174,22 +210,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("message").value = "";
     }, false);
 
-    /**
-     *  Request a audiocall to the other user
-     */
-    document.getElementById("call").addEventListener("click", function(){
-        console.log('Calling to ' + peer_id);
-        console.log(peer);
+    // /**
+    //  *  Request a audiocall to the other user
+    //  */
+    // document.getElementById("call").addEventListener("onmousedown", function(){
+    //     console.log('Calling to ' + peer_id);
+    //     console.log(peer);
 
-        var call = peer.call(peer_id, window.localStream);
+    //     var call = peer.call(peer_id, window.localStream);
+        
+    //     console.log('connections:############ ', peer.connections);
+    //     call.on('stream', function (stream) {
+    //         window.peer_stream = stream;
+    //         onReceiveStream(stream, 'peer-camera');
+    //     });
+    // }, false);
 
-        call.on('stream', function (stream) {
-            window.peer_stream = stream;
-            onReceiveStream(stream, 'peer-camera');
-        });
-    }, false);
-
-
+    //      /**
+    //  *  Request a audiocall to the other user
+    //  */
+    // document.getElementById("call").addEventListener("onmouseup", function(){
+    //     console.log('On Mouse Up, stop stream...');
+    //     window.peer_stream.getAudioTracks()[0].stop();
+    // }, false);
 
     /**
      *  Request muting the microphone at admin side.
@@ -218,7 +261,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             alert("You need to provide a peer to connect with !");
             return false;
         }
-
         document.getElementById("chat").className = "";
         document.getElementById("connection-form").className += " hidden";
     }, false);

@@ -12,6 +12,8 @@
 <body>
     <div class="container">
         <div class="row">
+           
+            
             <div class="col-md-6 col-lg-6">
                 <!-- 
                     Display audio of the current user
@@ -40,9 +42,23 @@
                 <small> Share the following ID with the pal that wants to talk with you</small>
             </h1>
             <!-- The ID of your current session -->
+            
             <h4 class="text-center">
                 <span id="peer-id-label"></span>
             </h4>
+
+            <div class="row">
+                <div class="col-md-6 col-lg-6">
+                        <div class="text-center">
+                            <span id = "isWebRTCSupported" class="">WebRTC</span><br>
+                            <span id = "hasMicrophone" class="hidden"></span><br>
+                            <span id = "isWebsiteHasMicrophonePermissions" class="hidden"></span><br>
+                        </div>
+                </div>
+                    <!-- <span class="ldBar" data-preset="fan" label-center></span> -->
+                    <br>
+            </div>
+
             <div class="col-md-12 col-lg-12">
                 <div class="form-horizontal" id="connection-form">
                     <fieldset>
@@ -82,7 +98,8 @@
                             <label class="control-label">Live chat</label>
                             <div class="input-group">
                                 <span class="input-group-btn">
-                                    <button id="call" class="btn btn-info">Call</button>
+                                    <!-- <p id="call" >Call</p> -->
+                                    <button  id="call" class="btn btn-info">Call <button>
                                     <button id="cancel" class="btn btn-info">Cancel</button>
                                 </span>
                                 <input type="text" class="form-control" name="message" id="message" placeholder="Your messag here ...">
@@ -100,6 +117,14 @@
     <script src="resources/js/peer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
     <script src="resources/js/script.js"></script>
+    <script src="resources/js/helper.js"></script>
+    <!-- <script src="./node_modules/detectrtc/DetectRTC.js"></script> -->
+    <!-- <script data-main="./node_modules/detectrtc/DetectRTC.js" src="resources/js/require.js"></script> -->
+    <script src="https://www.webrtc-experiment.com/DetectRTC.js"></script>
+    <!-- <script src="resources/js/DetectRTC.min.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="resources/css/loading-bar.css"/>
+    <script type="text/javascript" src="resources/js/loading-bar.js"></script>
+</script>
 </body>
 
 </html>

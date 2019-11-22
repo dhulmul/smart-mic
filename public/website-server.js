@@ -70,8 +70,13 @@ app.get('/', function (req, res) {
 });
 
 app.get('/admin', function (req, res) {
-    console.log('in admin...')
+    console.log('in admin...');
     res.sendFile(path.join(__dirname+'/admin.html'));
+});
+
+app.get('/microphone', function (req, res) {
+    console.log('in microphone...')
+    res.sendFile(path.join(__dirname+'/microphone.png'));
 });
 
 // Expose the css and js resources as "resources"

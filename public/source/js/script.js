@@ -7,10 +7,26 @@ document.addEventListener("DOMContentLoaded", function(event) {
         autoGainControl: false,
         noiseSuppression: true,
         echoCancellation: true,
-        sampleRate: 16000,
-        volume: 0.0
+        sampleRate: 32000,
+        volume: 0.0,
     };
-      
+    
+    var basicChecks = ["isWebRTCSupported", "hasMicrophone", "isWebsiteHasMicrophonePermissions"];
+
+    for (element of basicChecks) {
+        console.log(element);
+        document.getElementById(element).className = element;
+        var fn = window[element];
+        if (typeof fn === "function") {
+            document.getElementById(element).textContent = element + " " + fn.apply(null);
+            console.log(element + ' value: ', fn.apply(null)); 
+        }
+            
+    }
+    
+    console.log('WebRTC CHeck', isWebRTCSupported());
+    console.log('Microphone check...', hasMicrophone());
+
     /**
      * Important: the host needs to be changed according to your requirements.
      * e.g if you want to access the Peer server from another device, the
@@ -67,36 +83,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     /**
-     * Handle the on receive call event
-     */
-    peer.on('call', function (call) {
-        var acceptsCall = confirm("Audiocall incoming, do you want to accept it ?");
-
-        if(acceptsCall){
-            // Answer the call with your own audio stream
-            call.answer(window.localStream);
-
-            // Receive data
-            call.on('stream', function (stream) {
-                console.log('Constraints ************' ,stream.getAudioTracks()[0].getConstraints());
-                // Store a global reference of the other user stream
-                window.peer_stream = stream;
-                // Display the stream of the other user in the peer-camera audio element !
-                onReceiveStream(stream, 'peer-camera');
-            });
-
-            // Handle when the call finishes
-            call.on('close', function(){
-                alert("The session has finished");
-            });
-
-            // use call.close() to finish a call
-        }else{
-            console.log("Call denied !");
-        }
-    });
-
-    /**
      * Starts the request of microphone
      *
      * @param {Object} callbacks
@@ -132,13 +118,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // filter.connect(peer_destination);
 
         if(element_id === 'my-camera') {
-            console.log('found my-camera');
+            console.log('streaming from localhost..');
             const audioTrack = stream.getAudioTracks()[0]
             var ctx = new AudioContext()
             var src = ctx.createMediaStreamSource(new MediaStream([audioTrack]))
             var dst = ctx.createMediaStreamDestination()
             var gainNode = ctx.createGain()
-            gainNode.gain.value = 0.5;
+            gainNode.gain.value = 0.6;
 
             // var delay = ctx.createDelay(179);
             // delay.delayTime.value = 179;
@@ -199,18 +185,78 @@ document.addEventListener("DOMContentLoaded", function(event) {
     /**
      *  Request a audiocall to the other user
      */
-    document.getElementById("call").addEventListener("click", function(){
-        console.log('Calling to ' + peer_id);
+    // document.getElementById("call").addEventListener("click", function(){
+    //     console.log('Calling to ' + peer_id);
+    //     console.log(peer);
+
+    //     var call = peer.call(peer_id, window.localStream);
+
+    //     call.on('stream', function (stream) {
+    //         window.peer_stream = stream;
+    //         onReceiveStream(stream, 'peer-camera');
+    //     });
+    // }, false);
+
+    /**
+     *  Request a audiocall to the other user
+     */
+
+    var onLongPress = function(event) {
+        console.log('in on ontouchstartevent: ' + peer_id);
+        console.log(peer);
+        var call = peer.call(peer_id, window.localStream);
+        
+        console.log('connections:############ ', peer.connections);
+        call.on('stream', function (stream) {
+            window.peer_stream = stream;
+            onReceiveStream(stream, 'peer-camera');
+        });
+    };
+
+    var onKeyUp = function(event) {
+        console.log('in onKeyUp: ' + peer_id);
+        console.log(peer);
+        console.log('connections:############ ', peer.connections);
+        window.localStream.getAudioTracks()[0].enabled = false;
+    };
+
+    document.getElementById("call").addEventListener("touchstart", onLongPress, false);
+    document.getElementById("call").addEventListener("touchend", onKeyUp, false);
+    
+    document.getElementById("call").addEventListener("mousedown", function(){
+        console.log('in on mousedownevent: ' + peer_id);
         console.log(peer);
 
         var call = peer.call(peer_id, window.localStream);
-
+        
+        console.log('connections:############ ', peer.connections);
         call.on('stream', function (stream) {
             window.peer_stream = stream;
             onReceiveStream(stream, 'peer-camera');
         });
     }, false);
 
+    // document.getElementById("call").addEventListener("click", function(){
+    //     console.log('in on mousedownevent: ' + peer_id);
+    //     console.log(peer);
+
+    //     var call = peer.call(peer_id, window.localStream);
+        
+    //     console.log('connections:############ ', peer.connections);
+    //     call.on('stream', function (stream) {
+    //         window.peer_stream = stream;
+    //         onReceiveStream(stream, 'peer-camera');
+    //     });
+    // }, false);
+
+
+    /**
+     *  Stop a audiocall to the other user
+     */
+    document.getElementById("call").addEventListener("mouseup", function(){
+        console.log('On Mouse Up, stop stream...');
+        window.peer_stream.getAudioTracks()[0].stop();
+    }, false);
 
 
     /**
@@ -224,6 +270,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         let stream = audio.srcObject;
         stream.getAudioTracks()[0].stop();
         window.peer_stream.getAudioTracks()[0].stop();
+        window.localStream.getAudioTracks()[0].stop();
     }, false);
 
     /**
