@@ -48,16 +48,16 @@ Object.keys(ifaces).forEach(function (ifname) {
 
         if (alias >= 1) {
             console.log("Multiple ipv4 addreses were found ... ");
-            document.getElementById('ip-info').value = ifname + ':' + alias, "https://"+ iface.address + ":8443" ;
+            document.getElementById('ip-info').value = ifname + ':' + alias, "https://"+ iface.address + ":" + process.env.port ;
             // this single interface has multiple ipv4 addresses
-            console.log(ifname + ':' + alias, "https://"+ iface.address + ":8443");
+            console.log(ifname + ':' + alias, "https://"+ iface.address + ":" +  process.env.port);
         } else {
             console.log("in else..");
             // this interface has only one ipv4 adress
-            console.log(ifname, "https://"+ iface.address + ":8443");
+            console.log(ifname, "https://"+ iface.address + ":" +  process.env.port);
             
             if(ifname.startsWith('wl')) {
-                serverIP = "https://" + iface.address  + ":8443";
+                serverIP = "https://" + iface.address  + ":" +  process.env.port;
             }
         }
 
@@ -70,7 +70,9 @@ var LANAccess = "0.0.0.0";
 // For http
 //httpServer.listen(process.env.PORT || 8080, LANAccess);
 // For https
-httpsServer.listen(process.env.PORT || 8443, LANAccess);
+heroku_port = process.env.PORT || 8443;
+console.log(heroku_port)
+httpsServer.listen(heroku_port, LANAccess);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname+'/index.html'));
