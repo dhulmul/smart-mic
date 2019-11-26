@@ -1,1 +1,1 @@
-web: nodejs public/website-server.js
+web: node public/website-server.js
