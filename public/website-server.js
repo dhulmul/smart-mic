@@ -68,9 +68,9 @@ Object.keys(ifaces).forEach(function (ifname) {
 // Allow access from all the devices of the network (as long as connections are allowed by the firewall)
 var LANAccess = "0.0.0.0";
 // For http
-httpServer.listen(8080, LANAccess);
+httpServer.listen(process.env.PORT || 8080, LANAccess);
 // For https
-httpsServer.listen(8443, LANAccess);
+httpsServer.listen(process.env.PORT || 8443, LANAccess);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname+'/index.html'));
