@@ -6,11 +6,12 @@ function isWebRTCSupported() {
 }
 
 function hasMicrophone() {
-    return DetectRTC.hasMicrophone
+    console.log('in hasMicrophone: ',  DetectRTC.hasMicrophone);
+    return DetectRTC.hasMicrophone;
 }
 
 function isWebsiteHasMicrophonePermissions() {
-    return DetectRTC.isWebsiteHasMicrophonePermissions
+    return DetectRTC.isWebsiteHasMicrophonePermissions;
 }
 
 function getDownlink() {

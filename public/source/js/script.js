@@ -1,8 +1,10 @@
 // When the DOM is ready
-document.addEventListener("DOMContentLoaded", function(event) {
+    document.addEventListener("DOMContentLoaded", function(event) {
     var peer_id;
     var username;
     var conn;
+    var is_peer_connected = true;
+
     const constraints =  {
         autoGainControl: false,
         noiseSuppression: true,
@@ -10,22 +12,51 @@ document.addEventListener("DOMContentLoaded", function(event) {
         sampleRate: 32000,
         volume: 0.0,
     };
-    
-    var basicChecks = ["isWebRTCSupported", "hasMicrophone", "isWebsiteHasMicrophonePermissions"];
+    var progressBar = new ldBar('#progressBar');
+    progressBar.set(1);
 
-    for (element of basicChecks) {
-        console.log(element);
-        document.getElementById(element).className = element;
-        var fn = window[element];
-        if (typeof fn === "function") {
-            document.getElementById(element).textContent = element + " " + fn.apply(null);
-            console.log(element + ' value: ', fn.apply(null)); 
-        }
-            
+    function updateProgressBar(percentage) {
+        progressBar.set(percentage);
     }
-    
-    console.log('WebRTC CHeck', isWebRTCSupported());
-    console.log('Microphone check...', hasMicrophone());
+
+    DetectRTC.load(function() {
+        console.log('detect rtc', DetectRTC);
+        var basicChecks = ["isWebRTCSupported", "hasMicrophone", "isWebsiteHasMicrophonePermissions", "getDownlink"];
+        var basicChecksHintText = ["Is WebRTC supported:", "Device has a microphone:", 
+        "App already has Microphone Access:", "Network Bandwidth (Mbit/sec):"];
+        var results = [];
+        var percentageChecksDone = 0;
+        var checksCompleted = 0;
+       
+        for (element of basicChecks) {
+            console.log(element);
+            document.getElementById(element).className = element;
+            var fn = window[element];
+            if (typeof fn === "function") {
+                checksCompleted += 1;
+                percentageChecksDone = (checksCompleted / basicChecks.length) * 100;
+                console.log('Percentage Checks Done: ', percentageChecksDone);
+                results.push(fn.apply(null));
+                console.log(element + ' value: ');
+                updateProgressBar(percentageChecksDone);
+            }
+        }
+        if(percentageChecksDone >= 100) {
+            document.getElementById('basicChecks').textContent = "Results:";
+            var progressBar = document.getElementById('progressBar');
+            progressBar.parentNode.removeChild(progressBar);
+
+            var count = 0;
+            for (element of basicChecks) {
+                console.log(element);
+                var msg = results[count];
+                if (msg == true)
+                    msg = 'Yes'
+                document.getElementById(element).textContent = basicChecksHintText[count] + " " + msg;
+                count += 1;
+            }
+        }
+    });    
 
     /**
      * Important: the host needs to be changed according to your requirements.
@@ -55,14 +86,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // Once the initialization succeeds:
     // Show the ID that allows other user to connect to your session.
     peer.on('open', function () {
-        document.getElementById("peer-id-label").innerHTML = peer.id;
+      //  document.getElementById("peer-id-label").innerHTML = peer.id;
     });
 
     // When someone connects to your session:
     //
     // 1. Hide the peer_id field of the connection form and set automatically its value
     // as the peer of the user that requested the connection.
-    // 2.
     peer.on('connection', function (connection) {
         conn = connection;
         peer_id = connection.peer;
@@ -78,8 +108,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     peer.on('error', function(err){
-        alert("An error ocurred with peer: " + err);
+        alert("Your session has expired, reloading...");
         console.error("Reason of error " + err);
+        window.location.reload(true);
+    });
+
+
+    peer.on('disconnected', function(err){
+        console.error("RePeer disconnected" + err);
+        is_peer_connected = false;
     });
 
     /**
@@ -124,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             var src = ctx.createMediaStreamSource(new MediaStream([audioTrack]))
             var dst = ctx.createMediaStreamDestination()
             var gainNode = ctx.createGain()
-            gainNode.gain.value = 0.6;
+            gainNode.gain.value = 0.9;
 
             // var delay = ctx.createDelay(179);
             // delay.delayTime.value = 179;
@@ -185,94 +222,47 @@ document.addEventListener("DOMContentLoaded", function(event) {
     /**
      *  Request a audiocall to the other user
      */
-    // document.getElementById("call").addEventListener("click", function(){
-    //     console.log('Calling to ' + peer_id);
-    //     console.log(peer);
-
-    //     var call = peer.call(peer_id, window.localStream);
-
-    //     call.on('stream', function (stream) {
-    //         window.peer_stream = stream;
-    //         onReceiveStream(stream, 'peer-camera');
-    //     });
-    // }, false);
-
-    /**
-     *  Request a audiocall to the other user
-     */
 
     var onLongPress = function(event) {
         console.log('in on ontouchstartevent: ' + peer_id);
         console.log(peer);
+        window.localStream.getAudioTracks()[0].enabled = true;
+        window.peer_stream.getAudioTracks()[0].enabled = true;
         var call = peer.call(peer_id, window.localStream);
-        
-        console.log('connections:############ ', peer.connections);
+        console.log('connections:############ onlongpress', peer.connections);
         call.on('stream', function (stream) {
             window.peer_stream = stream;
             onReceiveStream(stream, 'peer-camera');
+        });
+        call.on('close', function (stream) {
+            console.log('in on close of peer..');
+            peer.disconnect();
         });
     };
 
     var onKeyUp = function(event) {
         console.log('in onKeyUp: ' + peer_id);
         console.log(peer);
-        console.log('connections:############ ', peer.connections);
+        console.log('connections:############ onkeyup', peer.connections);
         window.localStream.getAudioTracks()[0].enabled = false;
+        window.peer_stream.getAudioTracks()[0].enabled = false;
+    };
+
+    var onHangup = function(event) {
+        console.log('in onHangup: ' + peer_id);
+        console.log(peer);
+        console.log('connections:############ onHangup', peer.connections);
+        window.localStream.getAudioTracks()[0].stop();
+        window.peer_stream.getAudioTracks()[0].stop();
+        window.location.reload(true);
     };
 
     document.getElementById("call").addEventListener("touchstart", onLongPress, false);
     document.getElementById("call").addEventListener("touchend", onKeyUp, false);
+    document.getElementById("call").addEventListener("mousedown", onLongPress, false);
+    document.getElementById("call").addEventListener("mouseup", onKeyUp, false);
+    document.getElementById("hangup").addEventListener("click", onHangup, false);
     
-    document.getElementById("call").addEventListener("mousedown", function(){
-        console.log('in on mousedownevent: ' + peer_id);
-        console.log(peer);
-
-        var call = peer.call(peer_id, window.localStream);
-        
-        console.log('connections:############ ', peer.connections);
-        call.on('stream', function (stream) {
-            window.peer_stream = stream;
-            onReceiveStream(stream, 'peer-camera');
-        });
-    }, false);
-
-    // document.getElementById("call").addEventListener("click", function(){
-    //     console.log('in on mousedownevent: ' + peer_id);
-    //     console.log(peer);
-
-    //     var call = peer.call(peer_id, window.localStream);
-        
-    //     console.log('connections:############ ', peer.connections);
-    //     call.on('stream', function (stream) {
-    //         window.peer_stream = stream;
-    //         onReceiveStream(stream, 'peer-camera');
-    //     });
-    // }, false);
-
-
-    /**
-     *  Stop a audiocall to the other user
-     */
-    document.getElementById("call").addEventListener("mouseup", function(){
-        console.log('On Mouse Up, stop stream...');
-        window.peer_stream.getAudioTracks()[0].stop();
-    }, false);
-
-
-    /**
-     *  Request a audiocall the other user
-     */
-    document.getElementById("cancel").addEventListener("click", function(){
-        console.log('Cancelled call ');
-        console.log(peer);
-        var audio = document.getElementById('my-camera');
-        audio.muted = true;
-        let stream = audio.srcObject;
-        stream.getAudioTracks()[0].stop();
-        window.peer_stream.getAudioTracks()[0].stop();
-        window.localStream.getAudioTracks()[0].stop();
-    }, false);
-
     /**
      * On click the connect button, initialize connection with peer
      */

@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Audio Chat with PeerJS</title>
     
     <!-- Use Bootswatch CSS from cdn -->
@@ -37,57 +38,69 @@
 
         <div class="row">
             <h1 class="text-center">
-                Smart Mic Demo
+                Smart Mic: Participant Interface
                 <br>
-                <small> Share the following ID with the pal that wants to talk with you</small>
+                <!-- <small> Share the following ID with the pal that wants to talk with you</small> -->
             </h1>
             <!-- The ID of your current session -->
             
-            <h4 class="text-center">
+            <!-- <h4 class="text-center">
                 <span id="peer-id-label"></span>
-            </h4>
-
-            <div class="row">
-                <div class="col-md-6 col-lg-6">
-                        <div class="text-center">
-                            <span id = "isWebRTCSupported" class="">WebRTC</span><br>
-                            <span id = "hasMicrophone" class="hidden"></span><br>
-                            <span id = "isWebsiteHasMicrophonePermissions" class="hidden"></span><br>
-                        </div>
+            </h4> -->
+            
+            <div class="container">
+                <div class="container" >
+                    <div id="basicChecks" class="row lead">Running Checks:</div>
+                    <div class="row" id="progressBar"></div>
                 </div>
-                    <!-- <span class="ldBar" data-preset="fan" label-center></span> -->
-                    <br>
-            </div>
-
-            <div class="col-md-12 col-lg-12">
-                <div class="form-horizontal" id="connection-form">
-                    <fieldset>
-                        <legend>Connection Form</legend>
-                        <div class="form-group">
-                            <label for="name" class="col-lg-2 control-label">Username</label>
-                            <div class="col-lg-10">
-                                <input type="text" class="form-control" name="name" id="name" placeholder="Your random username">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
-                            <div class="col-lg-10">
-                                <input type="text" class="form-control" name="peer_id" id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                                
-                                <!-- Show message if someone connected to the client -->
-                                <div id="connected_peer_container" class="hidden">
-                                    An user is already connected to your session. Just provide a name to connect !
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-lg-10 col-lg-offset-2">
-                                <button id="connect-to-peer-btn" class="btn btn-primary">Connect to Peer</button>
-                            </div>
-                        </div>
-                    </fieldset>
+                
+                <div class="container">
+                    <div class="lead">
+                            <div id = "isWebRTCSupported" class="row"></div>
+                            <div id = "hasMicrophone" class="row"></div>
+                            <div id = "isWebsiteHasMicrophonePermissions" class="row"></div>
+                            <div id = "getDownlink" class="row"></div>
+                            <div id = "checkNetworkSpeed" class="row"></div>
+                    </div>
+                   
                 </div>
             </div>
+
+            <hr/><br><br>
+
+            <div class="container">
+                    <div class="col-md-12 col-lg-12">
+                            <div class="form-horizontal" id="connection-form">
+                                <fieldset>
+                                    <legend>Connect with Presenter</legend>
+                                    <div class="form-group">
+                                        <label for="name" class="col-lg-2 control-label">Username</label>
+                                        <div class="col-lg-10">
+                                            <input type="text"  class="form-control" name="name" id="name" placeholder="Your Username" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
+                                        <div class="col-lg-10">
+                                            <input type="text" value="mw001" class="form-control" name="peer_id" id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                            
+                                            <!-- Show message if someone connected to the client -->
+                                            <div id="connected_peer_container" class="hidden">
+                                                An user is already connected to your session. Just provide a name to connect !
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-lg-10 col-lg-offset-2">
+                                            <button id="connect-to-peer-btn" class="btn btn-primary">Ask a question!</button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+            </div>
+        
+
             <div class="col-md-12 col-lg-12">
                 <div id="chat" class="hidden">
                     <div id="messages-container">
@@ -97,15 +110,21 @@
                         <div class="form-group">
                             <label class="control-label">Live chat</label>
                             <div class="input-group">
-                                <span class="input-group-btn">
-                                    <!-- <p id="call" >Call</p> -->
-                                    <button  id="call" class="btn btn-info">Call <button>
-                                    <button id="cancel" class="btn btn-info">Cancel</button>
-                                </span>
-                                <input type="text" class="form-control" name="message" id="message" placeholder="Your messag here ...">
-                                <span class="input-group-btn">
-                                    <button id="send-message" class="btn btn-success">Send Message</button>
-                                </span>
+                                <div class="row">
+                                        <div class="input-group-btn">
+                                                <button  id="call" class="btn btn-info">Call<button><button  id="hangup" class="btn btn-info">Hangup<button>
+                                        </div>
+                                </div><br>
+                               
+                                <div class="row">
+                                        <input type="text" class="form-control" name="message" id="message" placeholder="Your messag here ...">
+                                </div><br>
+                               <div class="row">
+                                    <span class="input-group-btn">
+                                            <button id="send-message" class="btn btn-success">Send Message</button>
+                                        </span>
+                               </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -118,10 +137,7 @@
     <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
     <script src="resources/js/script.js"></script>
     <script src="resources/js/helper.js"></script>
-    <!-- <script src="./node_modules/detectrtc/DetectRTC.js"></script> -->
-    <!-- <script data-main="./node_modules/detectrtc/DetectRTC.js" src="resources/js/require.js"></script> -->
     <script src="https://www.webrtc-experiment.com/DetectRTC.js"></script>
-    <!-- <script src="resources/js/DetectRTC.min.js"></script> -->
     <link rel="stylesheet" type="text/css" href="resources/css/loading-bar.css"/>
     <script type="text/javascript" src="resources/js/loading-bar.js"></script>
 </script>

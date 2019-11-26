@@ -3,13 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Smart Mic</title>
+    <title>Smart Mic: Admin Interface</title>
     
     <!-- Use Bootswatch CSS from cdn -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css">
 </head>
 
 <body>
+    <div class="container">
+            <div class="row" id="qrcode" align="center"></div>
+            <div id="qrcodetext" align="center" class="lead" style="color: #317eac;"></div>
+    </div>
+        
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-lg-6">
@@ -23,47 +28,92 @@
 
         <div class="row">
             <h1 class="text-center">
-                Smart Mic Demo
+                Smart Mic: Admin Interface
                 <br>
-                <small> Share the following ID with the pal that wants to talk with you</small>
+                <small> Share the following ID with the participants that wants to talk with you</small>
             </h1>
+            
+    
             <!-- The ID of your current session -->
             <h4 class="text-center">
                 <span id="peer-id-label"></span>
             </h4>
-            <div class="col-md-12 col-lg-12">
-                <ul id="ip-list">
-                </ul>
+         
+      
+
+
+            <div class="container">
+                    <legend>Activity feed</legend>
+                    <div class="container">
+                            <div class="row">
+                                <span id="connectionStatus" class="lead"></span>
+                            </div>
+                            <div class="row">
+                                <span id="errorStatus" class="lead"></span>
+                            </div>
+                    </div>
+                    <div class="row" id="confirmsCall" style="display: none;">
+                        <span id="confirmsCallMessage" class="lead" ></span>
+                        <button id="confirmsCallYes" class="btn btn-primary">Yes</button>
+                        <button id="confirmsCallNo" class="btn btn-primary">No</button>
+                    </div>
             </div>
+            <br>
+
             <div class="col-md-12 col-lg-12">
                 <div class="form-horizontal" id="connection-form">
                     <fieldset>
-                        <legend>Connection Form</legend>
-                        <div class="form-group">
+                        <legend>Participant Details</legend>
+                        <!-- <div class="form-group">
                             <label for="name" class="col-lg-2 control-label">Username</label>
                             <div class="col-lg-10">
                                 <span type="text" class="control-label" name="name" id="name">
                                     Admin
                                     </span>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-group">
-                            <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
+                            <label for="peer_id" class="col-lg-2 control-label">Mute Participants</label>
+                            <input class="form-check-label"  type="checkbox" id="mute-peer"></input>
+
                             <div class="col-lg-10">
-                                <input type="text" class="form-control" name="peer_id" id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                                
+                                <!-- <input type="text" class="form-control" name="peer_id" id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"> -->
+                                <span name="peer_id" id="peer_id" class="label"></span>
                                 <!-- Show message if someone connected to the client -->
                                 <div id="connected_peer_container" class="hidden">
                                     An user is already connected to your session. Just provide a name to connect !
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <div class="col-lg-10 col-lg-offset-2">
                                 <button id="connect-to-peer-btn" class="btn btn-primary">Connect to Peer</button>
                             </div>
-                        </div>
+                        </div> -->
                     </fieldset>
+                </div>
+            </div>
+            <div class="container" >
+                <div class="col-md-12 col-lg-12 label">
+                    <ul id="ip-list">
+                    </ul>
+                </div>
+            </div>
+            <div class="container" id="table">
+                    <table class="table table-bordered table-striped mb-0">
+                            <tr>
+                                <td>
+                                    Name
+                                </td>
+                                <td>
+                                    Session Id
+                                 </td>
+                            </tr>
+                            <tbody id="tbody"></tbody>
+                    </table>
+            </div>
+            <div class="container" >
+                <div class="row" id="stats-box">
                 </div>
             </div>
             <div class="col-md-12 col-lg-12">
@@ -95,6 +145,8 @@
     <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
     <script src="resources/js/admin_script.js"></script>
     <script src="https://www.webrtc-experiment.com/getStats.js"></script>
+    <!-- <script src="./node_modules/getstats/getStats.js"></script> -->
+    <script src="resources/js/qrcode.js"></script>
 
 </body>
 

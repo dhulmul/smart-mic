@@ -21,6 +21,7 @@ var app = express();
 
 var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
+var serverIP = "";
 
 /**
  *  Show in the console the URL access for other devices in the network
@@ -50,8 +51,13 @@ Object.keys(ifaces).forEach(function (ifname) {
             // this single interface has multiple ipv4 addresses
             console.log(ifname + ':' + alias, "https://"+ iface.address + ":8443");
         } else {
+            console.log("in else..");
             // this interface has only one ipv4 adress
             console.log(ifname, "https://"+ iface.address + ":8443");
+            
+            if(ifname.startsWith('wl')) {
+                serverIP = "https://" + iface.address  + ":8443";
+            }
         }
 
         ++alias;
@@ -71,12 +77,26 @@ app.get('/', function (req, res) {
 
 app.get('/admin', function (req, res) {
     console.log('in admin...');
-    res.sendFile(path.join(__dirname+'/admin.html'));
+    var options = {
+        dotfiles: 'deny',
+        headers: {
+          'x-timestamp': Date.now(),
+          'x-sent': true
+        }
+      }
+    res.sendFile(path.join(__dirname+'/admin.html'), options);
 });
 
-app.get('/microphone', function (req, res) {
-    console.log('in microphone...')
-    res.sendFile(path.join(__dirname+'/microphone.png'));
+app.get('/serverIP', function (req, res) {
+    console.log('in serverIP...');
+    var options = {
+        dotfiles: 'deny',
+        headers: {
+          'x-timestamp': 'okay'
+        }
+      }
+      res.send(serverIP);
+    //res.sendFile(path.join(__dirname+'/microphone.png'), options);
 });
 
 // Expose the css and js resources as "resources"
