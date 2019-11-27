@@ -13,9 +13,7 @@
 <body>
     <div class="container">
         <div class="row">
-           
-            
-            <div class="col-md-6 col-lg-6">
+            <div class="row">
                 <!-- 
                     Display audio of the current user
                     Note: mute your own audio, otherwise you'll hear yourself ...
@@ -23,7 +21,7 @@
                 <div class="text-center">
                     <audio id="my-camera"  width="300" height="300" autoplay="autoplay" muted="true" class="center-block"></audio>
                     <span class="label label-info">Participant</span>
-                    <span class="ip-info">
+                    <span class="ip-info center-block">
                 </div>
             </div>
 
@@ -31,14 +29,14 @@
                 <!-- Display audio of the connected peer -->
                 <div class="text-center">
                     <audio id="peer-camera" width="300" height="300" autoplay="autoplay" class="center-block"></audio>
-                    <span class="label label-info" id="connected_peer"></span>
+                    <span class="label label-info center-block" id="connected_peer"></span>
                 </div>
             </div>
         </div>
 
         <div class="row">
             <h1 class="text-center">
-                Smart Mic: Participant Interface
+                Smart Mic
                 <br>
                 <!-- <small> Share the following ID with the pal that wants to talk with you</small> -->
             </h1>
@@ -56,11 +54,11 @@
                 
                 <div class="container">
                     <div class="lead">
-                            <div id = "isWebRTCSupported" class="row"></div>
-                            <div id = "hasMicrophone" class="row"></div>
-                            <div id = "isWebsiteHasMicrophonePermissions" class="row"></div>
-                            <div id = "getDownlink" class="row"></div>
-                            <div id = "checkNetworkSpeed" class="row"></div>
+                            <div id = "isWebRTCSupported" class="row label"></div>
+                            <div id = "hasMicrophone" class="row label"></div>
+                            <div id = "isWebsiteHasMicrophonePermissions" class="row label"></div>
+                            <div id = "getDownlink" class="row label"></div>
+                            <div id = "checkNetworkSpeed" class="row label"></div>
                     </div>
                    
                 </div>
@@ -76,13 +74,16 @@
                                     <div class="form-group">
                                         <label for="name" class="col-lg-2 control-label">Username</label>
                                         <div class="col-lg-10">
-                                            <input type="text"  class="form-control" name="name" id="name" placeholder="Your Username" required>
+                                            <input type="text"  class="form-control" name="name" id="name" placeholder="Your Username" 
+                                            required="required" required pattern=".*\S+.*">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
                                         <div class="col-lg-10">
-                                            <input type="text" value="mw001" class="form-control" name="peer_id" id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                            <input type="text" value="mw001" class="form-control" name="peer_id" 
+                                            id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" 
+                                            autocapitalize="off" spellcheck="false">
                                             
                                             <!-- Show message if someone connected to the client -->
                                             <div id="connected_peer_container" class="hidden">
@@ -101,32 +102,21 @@
             </div>
         
 
-            <div class="col-md-12 col-lg-12">
-                <div id="chat" class="hidden">
-                    <div id="messages-container">
-                        <div class="list-group" id="messages"></div>
-                    </div>
-                    <div id="message-container">
-                        <div class="form-group">
-                            <label class="control-label">Live chat</label>
-                            <div class="input-group">
-                                <div class="row">
-                                        <div class="input-group-btn">
-                                                <button  id="call" class="btn btn-info">Call<button><button  id="hangup" class="btn btn-info">Hangup<button>
-                                        </div>
-                                </div><br>
-                               
-                                <div class="row">
-                                        <input type="text" class="form-control" name="message" id="message" placeholder="Your messag here ...">
-                                </div><br>
-                               <div class="row">
-                                    <span class="input-group-btn">
-                                            <button id="send-message" class="btn btn-success">Send Message</button>
-                                        </span>
-                               </div>
-                                
+            <div class="container">
+                <div id="chat" class="hidden">                
+                    <button id="call" class="btn btn-primary center-block">Start a Call<button> 
+                    <div class="center-block" id="container-for-message">
+                            <input type="text" class="form-control"  name="message" id="message" placeholder="Your messag here ...">
+                            <div class="row">
+                                    <button id="send-message" class="btn btn-success">Send Message</button>
                             </div>
-                        </div>
+                    </div>       
+                </div><br>
+                    <hr>
+                    <div class="container">
+                            <div class="container" id="message-container">
+                                    <div class="list-group" id="messages"></div>
+                            </div>
                     </div>
                 </div>
             </div>

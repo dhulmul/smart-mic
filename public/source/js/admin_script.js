@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         tbody.innerHTML = '';
         for (const [key, value] of Object.entries(object)) {
             console.log(key, value);
-            var tr = "<tr>";
+            var tr = "<tr id='" + key + "'>";
             tr += "<td>" + value + "</td>" + "<td> " + key + "</td></tr>";
             tbody.innerHTML += tr;
           }
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // Use the handleMessage to callback when a message comes in
         conn.on('data', handleMessage);
         document.getElementById("peer_id").value += peer_id;
-        document.getElementById("connected_peer").innerHTML = "Name of peer:" + connection.metadata.username;
+        document.getElementById("connected_peer").innerHTML = "Peer, Session ID:" + connection.metadata.username + ", " + peer_id;
         current_peer_username = connection.metadata.username;
         connected_peers_name_dict[peer_id] = connection.metadata.username;
         console.log('Connection metadata:', connection.metadata);
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             var nameAndSessionId = '';
             
             if(call.peer in connected_peers_name_dict) {
-                document.getElementById("connected_peer").innerHTML = "Name of peer:" + connected_peers_name_dict[call.peer] + " " + call.peer;
+                document.getElementById("connected_peer").innerHTML = "Peer, Session ID:" + connected_peers_name_dict[call.peer] + ", " + call.peer;
                 nameAndSessionId = connected_peers_name_dict[call.peer] + ", Session Id: " + call.peer;
             }
             document.getElementById('peer_id').textContent = nameAndSessionId;
@@ -278,6 +278,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
      * @param {Object} data
      */
     function handleMessage(data) {
+        console.log('in handle message.');
         var orientation = "text-left";
 
         // If the message is yours, set text to right !
@@ -289,6 +290,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 messageHTML += '<h4 class="list-group-item-heading">'+ data.from +'</h4>';
                 messageHTML += '<p class="list-group-item-text">'+ data.text +'</p>';
             messageHTML += '</a>';
+        console.log(messageHTML);
+        console.log('data', data, ' peer: ');
+       // document.getElementById("messages").innerHTML += messageHTML;
 
         document.getElementById("messages").innerHTML += messageHTML;
     }

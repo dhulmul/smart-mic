@@ -42,7 +42,7 @@
             }
         }
         if(percentageChecksDone >= 100) {
-            document.getElementById('basicChecks').textContent = "Results:";
+            document.getElementById('basicChecks').textContent = "Test Suite Report:";
             var progressBar = document.getElementById('progressBar');
             progressBar.parentNode.removeChild(progressBar);
 
@@ -161,7 +161,7 @@
             var src = ctx.createMediaStreamSource(new MediaStream([audioTrack]))
             var dst = ctx.createMediaStreamDestination()
             var gainNode = ctx.createGain()
-            gainNode.gain.value = 0.9;
+            gainNode.gain.value = 0.5;
 
             // var delay = ctx.createDelay(179);
             // delay.delayTime.value = 179;
@@ -248,21 +248,22 @@
         window.peer_stream.getAudioTracks()[0].enabled = false;
     };
 
-    var onHangup = function(event) {
-        console.log('in onHangup: ' + peer_id);
-        console.log(peer);
-        console.log('connections:############ onHangup', peer.connections);
-        window.localStream.getAudioTracks()[0].stop();
-        window.peer_stream.getAudioTracks()[0].stop();
-        window.location.reload(true);
-    };
+    // var onHangup = function(event) {
+    //     console.log('in onHangup: ' + peer_id);
+    //     console.log(peer);
+    //     console.log('connections:############ onHangup', peer.connections);
+    //     window.localStream.getAudioTracks()[0].stop();
+    //     window.peer_stream.getAudioTracks()[0].stop();
+    //     window.location.reload(true);
+    // };
 
     document.getElementById("call").addEventListener("touchstart", onLongPress, false);
     document.getElementById("call").addEventListener("touchend", onKeyUp, false);
     document.getElementById("call").addEventListener("mousedown", onLongPress, false);
     document.getElementById("call").addEventListener("mouseup", onKeyUp, false);
-    document.getElementById("hangup").addEventListener("click", onHangup, false);
-    
+    // document.getElementById("hangup").addEventListener("click", onHangup, false);
+   // document.getElementById("container-for-message").style.marginTop = "20px";
+   // document.getElementById("container-for-message").style.borderStyle = "none";
     /**
      * On click the connect button, initialize connection with peer
      */

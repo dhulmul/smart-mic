@@ -17,11 +17,11 @@
         
     <div class="container">
         <div class="row">
-            <div class="col-md-6 col-lg-6">
+            <div class="row">
                 <!-- Display audio of the connected peer -->
                 <div class="text-center">
                     <audio id="peer-camera" width="300" height="300" autoplay="autoplay" class="center-block"></audio>
-                    <span class="label label-info" id="connected_peer"></span>
+                    <span class="label label-info center" id="connected_peer"></span>
                 </div>
             </div>
         </div>
@@ -112,12 +112,9 @@
                             <tbody id="tbody"></tbody>
                     </table>
             </div>
-            <div class="container" >
-                <div class="row" id="stats-box">
-                </div>
-            </div>
+     
             <div class="col-md-12 col-lg-12">
-                <div id="chat" class="hidden">
+                <div id="chat" class="">
                     <div id="messages-container">
                         <div class="list-group" id="messages"></div>
                     </div>
@@ -138,6 +135,13 @@
                     </div>
                 </div>
             </div>
+
+            <div class="container">
+                    <legend>WebRTC Stats</legend>
+                    <div class="row" id="stats-box">
+                    </div>
+            </div>
+
         </div>
     </div>
  
