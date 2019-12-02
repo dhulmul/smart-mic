@@ -81,7 +81,7 @@
                                     <div class="form-group">
                                         <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
                                         <div class="col-lg-10">
-                                            <input type="text" value="mw001" class="form-control" name="peer_id" 
+                                            <input type="text" value="mw002" class="form-control" name="peer_id" 
                                             id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" 
                                             autocapitalize="off" spellcheck="false">
                                             
@@ -104,12 +104,10 @@
 
             <div class="container">
                 <div id="chat" class="hidden">                
-                    <button id="call" class="btn btn-primary center-block">Start a Call<button> 
-                    <div class="center-block" id="container-for-message">
+                    <button id="call" class="btn btn-primary center-block" style="margin-bottom: 20px;"> <i class="fa fa-microphone"></i><button> 
+                    <div class="center-block" id="container-for-message" >
                             <input type="text" class="form-control"  name="message" id="message" placeholder="Your messag here ...">
-                            <div class="row">
-                                    <button id="send-message" class="btn btn-success">Send Message</button>
-                            </div>
+                            <button id="send-message" class="btn btn-success block">Send Message</button>
                     </div>       
                 </div><br>
                     <hr>
@@ -129,7 +127,10 @@
     <script src="resources/js/helper.js"></script>
     <script src="https://www.webrtc-experiment.com/DetectRTC.js"></script>
     <link rel="stylesheet" type="text/css" href="resources/css/loading-bar.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="resources/js/loading-bar.js"></script>
+    <script src="https://browser.sentry-cdn.com/5.9.1/bundle.min.js" integrity="sha384-/x1aHz0nKRd6zVUazsV6CbQvjJvr6zQL2CHbQZf3yoLkezyEtZUpqUNnOLW9Nt3v" crossorigin="anonymous">
+    </script>
 </script>
 </body>
 

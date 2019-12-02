@@ -12,6 +12,8 @@
         sampleRate: 32000,
         volume: 0.0,
     };
+    Sentry.init({ dsn: 'https://d3c358f4d8d24f60befddc338fb39cdf@sentry.io/1836252' });
+    // myUndefinedFunction();
     var progressBar = new ldBar('#progressBar');
     progressBar.set(1);
 
@@ -108,7 +110,7 @@
     });
 
     peer.on('error', function(err){
-        alert("Your session has expired, reloading...");
+        alert("Your session has expired, reloading..." + err);
         console.error("Reason of error " + err);
         window.location.reload(true);
     });
