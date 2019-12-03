@@ -12,8 +12,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         echoCancellation: true,
     };
 
-    
-
     function updateTable(object) {
         var tbody = document.getElementById('tbody');
         console.log('in updateTable...', object, ' ');
@@ -41,29 +39,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 height: 512,
             });
       }
-    // var imageAddr = "http://www.tranquilmusic.ca/images/cats/Cat2.JPG" + "?n=" + Math.random();
-    // var startTime, endTime;
-    // var downloadSize = 5616998;
-    // var download = new Image();
-    // download.onload = function () {
-    //     endTime = (new Date()).getTime();
-    //     showResults();
-    // }
-    // startTime = (new Date()).getTime();
-    // download.src = imageAddr;
-
-    function showResults() {
-        var duration = (endTime - startTime) / 1000; //Math.round()
-        var bitsLoaded = downloadSize * 8;
-        var speedBps = (bitsLoaded / duration).toFixed(2);
-        var speedKbps = (speedBps / 1024).toFixed(2);
-        var speedMbps = (speedKbps / 1024).toFixed(2);
-        alert("Your connection speed is: \n" + 
-            speedBps + " bps\n"   + 
-            speedKbps + " kbps\n" + 
-            speedMbps + " Mbps\n" );
-    }
-
       
     /**
      * Important: the host needs to be changed according to your requirements.
@@ -126,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 
                 // Now the statistics for this report; we intentially drop the ones we
                 // sorted to the top above
-          
                 Object.keys(report).forEach(statName => {
                   if (statName !== "id" && statName !== "timestamp" && statName !== "type") {
                     statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
@@ -236,19 +210,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }, false);
 
     /**
-     * Starts the request of microphone
-     *
-     * @param {Object} callbacks
-     */
-    function requestLocalAudio(callbacks) {
-        // Monkeypatch for crossbrowser geusermedia
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-        // Request audio
-        navigator.getUserMedia({ audio: constraints} , callbacks.success , callbacks.error);
-    }
-
-    /**
      * Handle the providen stream (audio) to the desired audio element
      *
      * @param {*} stream
@@ -259,17 +220,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // Retrieve the audio element according to the desired
         var audio = document.getElementById(element_id);
         // Set the given stream as the audio source
-        //video.src = window.URL.createObjectURL(stream);
         audio.srcObject = stream;
         // Store a global reference of the stream
-        window.peer_stream = stream;
-
-        // var microphone = context.createMediaStreamSource(stream);
-        // var filter = context.createBiquadFilter();
-        // var peer_destination = context.createMediaStreamDestination();
-        // microphone.connect(filter);
-        // filter.connect(peer_destination);   
-    
+        window.peer_stream = stream;  
     }
 
     /**
@@ -285,7 +238,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         if(data.from == username){
             orientation = "text-right"
         }
-
         var messageHTML =  '<a href="javascript:void(0);" class="list-group-item' + orientation + '">';
                 messageHTML += '<h4 class="list-group-item-heading">'+ data.from +'</h4>';
                 messageHTML += '<p class="list-group-item-text">'+ data.text +'</p>';
@@ -303,19 +255,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("send-message").addEventListener("click", function(){
         // Get the text to send
         var text = document.getElementById("message").value;
-
         // Prepare the data to send
         var data = {
             from: username,
             text: text
         };
-
         // Send the message with Peer
         conn.send(data);
-
         // Handle the message on the UI
         handleMessage(data);
-
         document.getElementById("message").value = "";
     }, false);
 
@@ -333,30 +281,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             checkBox.textContent = "Mute Participant";
         }
     },false);
-   
-    // /**
-    //  *  Request a audiocall to the other user
-    //  */
-    // document.getElementById("call").addEventListener("onmousedown", function(){
-    //     console.log('Calling to ' + peer_id);
-    //     console.log(peer);
-
-    //     var call = peer.call(peer_id, window.localStream);
-        
-    //     console.log('connections:############ ', peer.connections);
-    //     call.on('stream', function (stream) {
-    //         window.peer_stream = stream;
-    //         onReceiveStream(stream, 'peer-camera');
-    //     });
-    // }, false);
-
-    //      /**
-    //  *  Request a audiocall to the other user
-    //  */
-    // document.getElementById("call").addEventListener("onmouseup", function(){
-    //     console.log('On Mouse Up, stop stream...');
-    //     window.peer_stream.getAudioTracks()[0].stop();
-    // }, false);
 
     /**
      *  Request muting the microphone at admin side.
@@ -365,27 +289,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
         console.log('Muting microphone at admin side.');
         window.peer_stream.getAudioTracks()[0].stop();
     }, false);
-
-    /**
-     * On click the connect button, initialize connection with peer
-     */
-    // document.getElementById("connect-to-peer-btn").addEventListener("click", function(){
-    //     username = document.getElementById("name").value;
-    //     peer_id = document.getElementById("peer_id").value;
-
-    //     if (peer_id) {
-    //         conn = peer.connect(peer_id, {
-    //             metadata: {
-    //                 'username': username
-    //             }
-    //         });
-
-    //         conn.on('data', handleMessage);
-    //     }else{
-    //         alert("You need to provide a peer to connect with !");
-    //         return false;
-    //     }
-    //     document.getElementById("chat").className = "";
-    //     document.getElementById("connection-form").className += " hidden";
-    // }, false);
 }, false);

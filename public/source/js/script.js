@@ -13,7 +13,6 @@
         volume: 0.0,
     };
     Sentry.init({ dsn: 'https://d3c358f4d8d24f60befddc338fb39cdf@sentry.io/1836252' });
-    // myUndefinedFunction();
     var progressBar = new ldBar('#progressBar');
     progressBar.set(1);
 
@@ -98,10 +97,8 @@
     peer.on('connection', function (connection) {
         conn = connection;
         peer_id = connection.peer;
-
         // Use the handleMessage to callback when a message comes in
         conn.on('data', handleMessage);
-
         // Hide peer_id field and set the incoming peer id as value
         document.getElementById("peer_id").className += " hidden";
         document.getElementById("peer_id").value = peer_id;
@@ -144,8 +141,6 @@
         console.log('on onreceivestream: ', element_id); 
         // Retrieve the audio element according to the desired
         var audio = document.getElementById(element_id);
-        // Set the given stream as the audio source
-        //video.src = window.URL.createObjectURL(stream);
         audio.srcObject = stream;
         // Store a global reference of the stream
         window.peer_stream = stream;
@@ -156,7 +151,7 @@
         // microphone.connect(filter);
         // filter.connect(peer_destination);
 
-        if(element_id === 'my-camera') {
+        if(element_id === 'my-microphone') {
             console.log('streaming from localhost..');
             const audioTrack = stream.getAudioTracks()[0]
             var ctx = new AudioContext()
@@ -250,22 +245,10 @@
         window.peer_stream.getAudioTracks()[0].enabled = false;
     };
 
-    // var onHangup = function(event) {
-    //     console.log('in onHangup: ' + peer_id);
-    //     console.log(peer);
-    //     console.log('connections:############ onHangup', peer.connections);
-    //     window.localStream.getAudioTracks()[0].stop();
-    //     window.peer_stream.getAudioTracks()[0].stop();
-    //     window.location.reload(true);
-    // };
-
     document.getElementById("call").addEventListener("touchstart", onLongPress, false);
     document.getElementById("call").addEventListener("touchend", onKeyUp, false);
     document.getElementById("call").addEventListener("mousedown", onLongPress, false);
     document.getElementById("call").addEventListener("mouseup", onKeyUp, false);
-    // document.getElementById("hangup").addEventListener("click", onHangup, false);
-   // document.getElementById("container-for-message").style.marginTop = "20px";
-   // document.getElementById("container-for-message").style.borderStyle = "none";
     /**
      * On click the connect button, initialize connection with peer
      */
@@ -297,11 +280,9 @@
         success: function(stream){
             console.log('type of stream: ', typeof(stream));
             const track = stream.getAudioTracks()[0];
-            // track.applyConstraints(constraints);
-            // console.log('Type of track: ', typeof(track));
             console.log(track.getConstraints());
             window.localStream = stream;
-            onReceiveStream(stream, 'my-camera');
+            onReceiveStream(stream, 'my-microphone');
         },
         error: function(err){
             alert("Cannot get access to your microphone !");
